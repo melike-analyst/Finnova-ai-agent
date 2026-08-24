@@ -64,11 +64,11 @@ Veriye kasıtlı olarak gerçekçi iş desenleri gömülüdür (agent'ın bunlar
 "keşfetmesi" beklenir):
 
 - Kredi kartı harcamalarında şüpheli (flagged) işlem oranı **%4,51**, diğer
-  işlem tiplerinde ortalama **~%1** (doğrulandı ✅)
+  işlem tiplerinde ortalama **~%1** (doğrulandı)
 - Kış aylarında (Ara–Şub) fatura ödemesi oranı **%38,5**, diğer mevsimlerde
-  **%12,7** (doğrulandı ✅)
+  **%12,7** (doğrulandıı)
 - Son 6 ayda İstanbul ve İzmir şubelerinde aylık ortalama işlem hacminde
-  belirgin artış (doğrulandı ✅)
+  belirgin artış (doğrulandı)
 
 ## 3) Kurulum
 
