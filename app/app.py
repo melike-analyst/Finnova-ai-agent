@@ -10,8 +10,8 @@ import streamlit as st
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 from src.agent import ask  # noqa: E402
 
-st.set_page_config(page_title="FinNova BI Agent", page_icon="📊", layout="centered")
-st.title("📊 FinNova Bank — Otonom İş Zekası Ajanı")
+st.set_page_config(page_title="FinNova BI Agent", layout="centered")
+st.title(" FinNova Bank — Otonom İş Zekası Ajanı")
 st.caption(
     "Doğal dilde bir soru sorun; agent veritabanını sorgular, analiz eder "
     "ve gerekiyorsa grafik üretir. (Veri tamamen sentetiktir.)"
