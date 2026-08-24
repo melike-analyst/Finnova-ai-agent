@@ -17,7 +17,7 @@ from src.tools.sql_tool import UnsafeQueryError, run_sql
 
 load_dotenv()
 
-MODEL = "gemini-2.5-flash"  # Ücretsiz katmanda kullanılabilen, hızlı model
+MODEL = "gemini-3.6-flash"  # Ücretsiz katmanda kullanılabilen, hızlı model
 MAX_TURNS = 5  # sonsuz döngüyü önlemek için güvenlik sınırı
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
