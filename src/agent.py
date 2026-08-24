@@ -1,27 +1,15 @@
 """
-Otonom İş Zekası Ajanı - agent orkestrasyon katmanı
-------------------------------------------------------
-Bu modül, Anthropic'in native tool-use (function calling) API'sini
-kullanarak bir "agent döngüsü" (agentic loop) kurar:
-
-    1. Kullanıcı doğal dilde soru sorar
-    2. LLM, soruyu cevaplamak için hangi aracı çağırması gerektiğine
-       karar verir (run_sql, make_chart)
-    3. Araç çalıştırılır, sonucu tekrar LLM'e verilir
-    4. LLM ya başka bir araç çağırır ya da nihai, doğal dilde
-       yorumlanmış cevabı üretir
-
-Bu, LangChain/LangGraph gibi framework'lerin "arka planda" yaptığı işin
-şeffaf, framework'süz bir versiyonudur - agent kavramını gerçekten
-anladığınızı göstermek için bilinçli bir tercihtir. Framework'e geçmek
-isterseniz aynı mantığı LangGraph StateGraph ile de kurabilirsiniz
-(bkz. README, "Framework'e geçiş" bölümü).
+Otonom İş Zekası Ajanı - agent orkestrasyon katmanı (Google Gemini sürümü)
+----------------------------------------------------------------------------
+Bu modül, Google Gemini API'sinin native function-calling özelliğini
+kullanarak bir "agent döngüsü" kurar.
 """
 import json
 import os
 
-from anthropic import Anthropic
 from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 
 from src.db import get_schema_description
 from src.tools.chart_tool import make_chart
@@ -29,42 +17,43 @@ from src.tools.sql_tool import UnsafeQueryError, run_sql
 
 load_dotenv()
 
-MODEL = "claude-sonnet-5"  # Güncel model listesi için: https://platform.claude.com/docs/en/about-claude/models/overview
+MODEL = "gemini-2.5-flash"  # Ücretsiz katmanda kullanılabilen, hızlı model
 MAX_TURNS = 5  # sonsuz döngüyü önlemek için güvenlik sınırı
 
-client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-TOOLS = [
-    {
-        "name": "run_sql",
-        "description": (
-            "FinNova Bank veritabanında salt-okunur bir SELECT sorgusu "
-            "çalıştırır ve sonucu tablo olarak döner. Kullanıcının sorusunu "
-            "cevaplamak için gereken veriyi çekmek üzere kullan."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string", "description": "Çalıştırılacak SELECT sorgusu"},
-                "purpose": {"type": "string", "description": "Bu sorgunun neyi ölçtüğüne dair kısa açıklama"},
-            },
-            "required": ["query"],
+RUN_SQL_DECLARATION = types.FunctionDeclaration(
+    name="run_sql",
+    description=(
+        "FinNova Bank veritabanında salt-okunur bir SELECT sorgusu "
+        "çalıştırır ve sonucu tablo olarak döner. Kullanıcının sorusunu "
+        "cevaplamak için gereken veriyi çekmek üzere kullan."
+    ),
+    parameters={
+        "type": "object",
+        "properties": {
+            "query": {"type": "string", "description": "Çalıştırılacak SELECT sorgusu"},
+            "purpose": {"type": "string", "description": "Bu sorgunun neyi ölçtüğüne dair kısa açıklama"},
         },
+        "required": ["query"],
     },
-    {
-        "name": "make_chart",
-        "description": (
-            "Bir önceki run_sql sonucundan görsel bir grafik (çizgi ya da "
-            "bar) üretir. Kullanıcı trend, karşılaştırma ya da dağılım "
-            "istediğinde kullan."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {"title": {"type": "string"}},
-            "required": ["title"],
-        },
+)
+
+MAKE_CHART_DECLARATION = types.FunctionDeclaration(
+    name="make_chart",
+    description=(
+        "Bir önceki run_sql sonucundan görsel bir grafik (çizgi ya da "
+        "bar) üretir. Kullanıcı trend, karşılaştırma ya da dağılım "
+        "istediğinde kullan."
+    ),
+    parameters={
+        "type": "object",
+        "properties": {"title": {"type": "string"}},
+        "required": ["title"],
     },
-]
+)
+
+TOOLS = [types.Tool(function_declarations=[RUN_SQL_DECLARATION, MAKE_CHART_DECLARATION])]
 
 
 def _system_prompt() -> str:
@@ -108,37 +97,35 @@ def _execute_tool(name: str, tool_input: dict, last_df):
 def ask(question: str) -> dict:
     """Kullanıcı sorusunu agent döngüsüne sokar, nihai cevabı ve varsa
     üretilen grafik yolunu döner."""
-    messages = [{"role": "user", "content": question}]
+    config = types.GenerateContentConfig(
+        system_instruction=_system_prompt(),
+        tools=TOOLS,
+    )
+    contents = [types.Content(role="user", parts=[types.Part(text=question)])]
     last_df = None
     chart_path = None
 
     for _ in range(MAX_TURNS):
-        response = client.messages.create(
-            model=MODEL,
-            max_tokens=1500,
-            system=_system_prompt(),
-            tools=TOOLS,
-            messages=messages,
-        )
+        response = client.models.generate_content(model=MODEL, contents=contents, config=config)
+        candidate = response.candidates[0]
+        function_calls = [p.function_call for p in candidate.content.parts if p.function_call]
 
-        if response.stop_reason != "tool_use":
-            final_text = "".join(b.text for b in response.content if b.type == "text")
+        if not function_calls:
+            final_text = response.text or ""
             return {"answer": final_text, "chart_path": chart_path}
 
-        messages.append({"role": "assistant", "content": response.content})
-        tool_results = []
-        for block in response.content:
-            if block.type != "tool_use":
-                continue
-            result_text, last_df = _execute_tool(block.name, block.input, last_df)
-            if block.name == "make_chart" and isinstance(result_text, str) and result_text.startswith("Grafik kaydedildi"):
+        contents.append(candidate.content)  # modelin function_call içeren turu
+
+        response_parts = []
+        for fc in function_calls:
+            tool_input = dict(fc.args) if fc.args else {}
+            result_text, last_df = _execute_tool(fc.name, tool_input, last_df)
+            if fc.name == "make_chart" and isinstance(result_text, str) and result_text.startswith("Grafik kaydedildi"):
                 chart_path = result_text.split(": ", 1)[1]
-            tool_results.append({
-                "type": "tool_result",
-                "tool_use_id": block.id,
-                "content": str(result_text),
-            })
-        messages.append({"role": "user", "content": tool_results})
+            response_parts.append(
+                types.Part.from_function_response(name=fc.name, response={"result": str(result_text)})
+            )
+        contents.append(types.Content(role="user", parts=response_parts))
 
     return {"answer": "Üzgünüm, soruyu maksimum adım sayısında çözemedim.", "chart_path": chart_path}
 
