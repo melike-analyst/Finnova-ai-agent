@@ -37,7 +37,7 @@ agent kavramının nasıl çalıştığını göstermek hedeflendi. Framework'e 
 isterseniz aynı akışı LangGraph `StateGraph` ile yeniden kurabilirsiniz (bkz.
 §7 "Genişletme fikirleri").
 
-**LLM sağlayıcı notu:** Proje Google Gemini API kullanır (`gemini-2.5-flash`)
+**LLM sağlayıcı notu:** Proje Google Gemini API kullanır (`gemini-3.5-flash`)
 çünkü Gemini, kredi kartı gerektirmeyen gerçek bir ücretsiz katman sunuyor —
 portfolyo/demo projeleri için pratik bir tercih. Aynı agent mimarisi küçük
 bir değişiklikle Anthropic Claude ya da OpenAI API'sine de taşınabilir;
