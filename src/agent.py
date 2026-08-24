@@ -17,7 +17,7 @@ from src.tools.sql_tool import UnsafeQueryError, run_sql
 
 load_dotenv()
 
- MODEL ="gemini-1.5-flash"  # Ücretsiz katmanda kullanılabilen, hızlı model
+MODEL = "gemini-2.5-flash"  # Ücretsiz katmanda kullanılabilen, hızlı model
 MAX_TURNS = 8  # sonsuz döngüyü önlemek için güvenlik sınırı
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
@@ -65,7 +65,7 @@ sorgulayarak, analiz ederek ve anlaşılır şekilde yorumlayarak cevaplamak.
 VERİTABANI ŞEMASI:
 {schema}
 
-KURALLAR:
+
 KURALLAR:
 - Karşılaştırma sorularında (örn. iki şehir, iki dönem) mümkünse TÜM veriyi TEK bir SQL sorgusuyla çek (GROUP BY / CASE WHEN kullanarak), ayrı ayrı sorgular çalıştırmak yerine.
 - Sadece SELECT sorguları çalıştırabilirsin (run_sql aracı zaten bunu zorunlu kılar).
@@ -136,4 +136,3 @@ if __name__ == "__main__":
     import sys
     q = sys.argv[1] if len(sys.argv) > 1 else "Hangi işlem tipinde şüpheli işlem oranı en yüksek?"
     print(json.dumps(ask(q), ensure_ascii=False, indent=2))
-
