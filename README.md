@@ -4,6 +4,8 @@ LLM tabanlı, çok adımlı bir **AI agent** kullanarak doğal dilde sorulan fin
 sorularını otomatik olarak SQL sorgusuna çeviren, analiz eden, yorumlayan ve
 haftalık raporları otomatik gönderen uçtan uca bir sistem.
 
+🔗 Live demo: [https://finnova-ai-agent-cmemkakg44xrslfucszk6x.streamlit.app/]
+
 > **Neden bu proje?** Çoğu "AI portfolyo projesi" tek seferlik bir chatbot demosudur.
 > Bu proje bunun yerine üç şeyi aynı anda gösterir: (1) LLM'i harici araçlarla (SQL,
 > grafik) birleştiren **agent orkestrasyonu**, (2) bunu **otomasyonla** gerçek bir iş
