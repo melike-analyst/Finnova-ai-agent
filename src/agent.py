@@ -6,7 +6,9 @@ kullanarak bir "agent döngüsü" kurar.
 """
 import json
 import os
+import time
 
+time.sleep(2)  # Limit aşımını önlemek için 2 saniye bekler
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
@@ -17,7 +19,7 @@ from src.tools.sql_tool import UnsafeQueryError, run_sql
 
 load_dotenv()
 
- MODEL = "gemini-3.5-flash-lite"   # Ücretsiz katmanda kullanılabilen, hızlı model
+ MODEL ="gemini-1.5-flash"  # Ücretsiz katmanda kullanılabilen, hızlı model
 MAX_TURNS = 8  # sonsuz döngüyü önlemek için güvenlik sınırı
 
 client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
@@ -137,14 +139,3 @@ if __name__ == "__main__":
     q = sys.argv[1] if len(sys.argv) > 1 else "Hangi işlem tipinde şüpheli işlem oranı en yüksek?"
     print(json.dumps(ask(q), ensure_ascii=False, indent=2))
 
-
-from tenacity import retry, stop_after_attempt, wait_exponential
-
-
-@retry(
-    wait=wait_exponential(multiplier=1, min=4, max=60),
-    stop=stop_after_attempt(5),
-)
-def call_gemini_api(...):
-  # API çağrısı yapan fonksiyonunuz
-  pass
