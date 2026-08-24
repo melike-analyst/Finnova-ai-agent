@@ -6,9 +6,7 @@ kullanarak bir "agent döngüsü" kurar.
 """
 import json
 import os
-import time
 
-time.sleep(2)  # Limit aşımını önlemek için 2 saniye bekler
 from dotenv import load_dotenv
 from google import genai
 from google.genai import types
