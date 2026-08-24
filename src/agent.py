@@ -24,7 +24,7 @@ from src.tools.sql_tool import UnsafeQueryError, run_sql
 
 load_dotenv()
 
-MODEL = "gemini-3.6-flash"
+MODEL = "gemini-3.5-flash-lite"
 MAX_TURNS = 8
 MAX_RETRIES_ON_QUOTA = 1
 QUOTA_RETRY_WAIT_SECONDS = 20
