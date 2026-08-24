@@ -18,7 +18,7 @@ haftalık raporları otomatik gönderen uçtan uca bir sistem.
 Kullanıcı sorusu / zamanlı tetik
             │
             ▼
-   Agent orkestratörü (Claude + native tool-use)
+   Agent orkestratörü (Google Gemini + native function-calling)
             │
             ├──▶ run_sql   → SQLite veritabanı (yalnızca SELECT, güvenli)
             └──▶ make_chart → otomatik grafik üretimi
@@ -30,12 +30,18 @@ Kullanıcı sorusu / zamanlı tetik
             └──▶ Haftalık otomasyon → Slack / e-posta
 ```
 
-Agent döngüsü framework'süz, doğrudan Anthropic'in native tool-use API'siyle
-yazılmıştır (`src/agent.py`). Bu bilinçli bir tercihtir: LangChain/LangGraph gibi
-kütüphaneler bu mantığı "kutunun içinde" yapar; burada mantığı şeffaf tutarak
+Agent döngüsü framework'süz, doğrudan Google Gemini'nin native function-calling
+API'siyle yazılmıştır (`src/agent.py`). Bu bilinçli bir tercihtir: LangChain/LangGraph
+gibi kütüphaneler bu mantığı "kutunun içinde" yapar; burada mantığı şeffaf tutarak
 agent kavramının nasıl çalıştığını göstermek hedeflendi. Framework'e geçmek
 isterseniz aynı akışı LangGraph `StateGraph` ile yeniden kurabilirsiniz (bkz.
 §7 "Genişletme fikirleri").
+
+**LLM sağlayıcı notu:** Proje Google Gemini API kullanır (`gemini-2.5-flash`)
+çünkü Gemini, kredi kartı gerektirmeyen gerçek bir ücretsiz katman sunuyor —
+portfolyo/demo projeleri için pratik bir tercih. Aynı agent mimarisi küçük
+bir değişiklikle Anthropic Claude ya da OpenAI API'sine de taşınabilir;
+`src/agent.py` içindeki tool-calling mantığı sağlayıcıdan bağımsız tasarlandı.
 
 ## 2) Veri seti
 
@@ -78,8 +84,8 @@ python data/load_to_sqlite.py
 
 # .env dosyanızı hazırlayın
 cp .env.example .env
-# .env içine kendi ANTHROPIC_API_KEY'inizi girin
-# (https://console.anthropic.com/settings/keys)
+# .env içine kendi GEMINI_API_KEY'inizi girin (ücretsiz, kredi kartı gerekmez)
+# (https://aistudio.google.com/apikey)
 ```
 
 ## 4) Çalıştırma
@@ -163,9 +169,9 @@ finnova-ai-agent/
 
 ## 9) Kullanılan teknolojiler
 
-`Python` · `Anthropic API (tool-use / agentic loop)` · `SQLite` · `pandas` ·
-`Streamlit` · `APScheduler` · `Slack Webhooks` · (opsiyonel genişletme:
-`LangGraph`, `Chroma`, `n8n`)
+`Python` · `Google Gemini API (function-calling / agentic loop)` · `SQLite` ·
+`pandas` · `Streamlit` · `APScheduler` · `Slack Webhooks` · (opsiyonel
+genişletme: `LangGraph`, `Chroma`, `n8n`)
 
 ---
 
