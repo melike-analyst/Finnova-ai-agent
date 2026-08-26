@@ -125,16 +125,16 @@ Agent'ın adımları:
 ## 5.1) Klasik makine öğrenmesi bileşeni: Fraud tahmin modeli
 
 Ana proje LLM tabanlı bir agent'ken, `notebooks/fraud_detection_model.ipynb`
-projenin **geleneksel ML** tarafını gösterir — EDA, özellik mühendisliği,
+projenin **geleneksel ML** tarafını gösterir :EDA, özellik mühendisliği,
 model eğitimi (Logistic Regression + Random Forest) ve değerlendirme
 (precision/recall/F1/ROC-AUC/feature importance) uçtan uca bir pipeline
 olarak sunulur.
 
 **Sonuçlar** (dürüstçe raporlanmıştır): Random Forest ROC-AUC ~0,66,
-Logistic Regression ~0,63. Performans mütevazı — bunun nedeni sentetik
+Logistic Regression ~0,63. Performans mütevazı sonuç :bunun nedeni sentetik
 veri setinde fraud etiketinin ağırlıklı olarak işlem tipine bağlı rastgele
-atanmış olması (bkz. notebook'taki "Sonuç ve Değerlendirme" bölümü için
-tam yorum). Bu bilinçli bir şeffaflık tercihidir: sonuçları abartmak yerine
+atanmış olması ( notebook'taki "Sonuç ve Değerlendirme" bölümü için
+tam yorum var). Bu bilinçli bir şeffaflık tercihidir: sonuçları abartmak yerine
 modelin sınırlarını doğru yorumlamak, gerçek bir veri bilimci pratiğidir.
 
 Çalıştırmak için:
@@ -148,14 +148,14 @@ jupyter notebook fraud_detection_model.ipynb
 - `src/tools/sql_tool.py`, LLM'in ürettiği SQL'i çalıştırmadan önce doğrular:
   yalnızca `SELECT` ifadelerine izin verilir, `INSERT/UPDATE/DELETE/DROP` gibi
   komutlar ve çoklu ifadeler (`;`) reddedilir.
-- `.env` dosyası `.gitignore` içinde — API anahtarınız asla repoya gitmez.
+- `.env` dosyası `.gitignore` içinde : API anahtarınız asla repoya gitmez.
 - Sonuçlar 200 satırla sınırlandırılır (agent'ın context penceresini şişirmemek
   ve olası maliyet artışını önlemek için).
 
 ## 7) Genişletme fikirleri (sonraki adımlar)
 
 - **RAG katmanı ekleyin:** Şirket politika/prosedür PDF'lerini de sorgulayabilen
-  bir vektör veritabanı (Chroma) entegre edin — "Kredi onay politikamıza göre
+  bir vektör veritabanı (Chroma) entegre edin . "Kredi onay politikamıza göre
   bu müşteri uygun mu?" gibi sorulara cevap verebilsin.
 - **LangGraph'a geçiş:** `src/agent.py`'deki döngüyü bir `StateGraph` olarak
   yeniden modelleyin; çoklu-agent (planlayıcı + analist + yazar) mimarisine
@@ -197,5 +197,4 @@ genişletme: `LangGraph`, `Chroma`, `n8n`)
 
 ---
 
-*Not: Bu proje bir portfolyo/öğrenme çalışmasıdır. Kullanılan tüm veriler
-sentetiktir, gerçek bir banka veya müşteri verisiyle ilişkisi yoktur.*
+*Not: Kullanılan tüm veriler sentetiktir, gerçek bir banka veya müşteri verisiyle ilişkisi yoktur.*
