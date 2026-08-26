@@ -122,6 +122,27 @@ Agent'ın adımları:
    belirgin şekilde daha yüksek şüpheli işlem oranına sahip. Bu, kart bazlı
    dolandırıcılık kontrolüne öncelik verilmesi gerektiğine işaret ediyor."*
 
+## 5.1) Klasik makine öğrenmesi bileşeni: Fraud tahmin modeli
+
+Ana proje LLM tabanlı bir agent'ken, `notebooks/fraud_detection_model.ipynb`
+projenin **geleneksel ML** tarafını gösterir — EDA, özellik mühendisliği,
+model eğitimi (Logistic Regression + Random Forest) ve değerlendirme
+(precision/recall/F1/ROC-AUC/feature importance) uçtan uca bir pipeline
+olarak sunulur.
+
+**Sonuçlar** (dürüstçe raporlanmıştır): Random Forest ROC-AUC ~0,66,
+Logistic Regression ~0,63. Performans mütevazı — bunun nedeni sentetik
+veri setinde fraud etiketinin ağırlıklı olarak işlem tipine bağlı rastgele
+atanmış olması (bkz. notebook'taki "Sonuç ve Değerlendirme" bölümü için
+tam yorum). Bu bilinçli bir şeffaflık tercihidir: sonuçları abartmak yerine
+modelin sınırlarını doğru yorumlamak, gerçek bir veri bilimci pratiğidir.
+
+Çalıştırmak için:
+```bash
+cd notebooks
+jupyter notebook fraud_detection_model.ipynb
+```
+
 ## 6) Güvenlik notları
 
 - `src/tools/sql_tool.py`, LLM'in ürettiği SQL'i çalıştırmadan önce doğrular:
