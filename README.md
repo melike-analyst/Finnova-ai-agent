@@ -4,7 +4,7 @@ An end-to-end system that uses an LLM-based, multi-step **AI agent** to translat
 natural-language finance/banking questions into SQL queries, analyze the
 results, interpret them, and automatically send weekly reports.
 
-> **Why this project?** Most "AI portfolio projects" are one-off chatbot demos.
+> **Why this project?** Most "AI  projects" are one-off chatbot demos.
 > This project instead demonstrates three things at once: (1) **agent
 > orchestration** that combines an LLM with external tools (SQL, charts),
 > (2) wiring that into a real workflow through **automation** (weekly report →
